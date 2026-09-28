@@ -1,195 +1,473 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>SEO Content Agent</title>
+  <title>PAS2008 Blog Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"></script>
   <style>
-    body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;padding:20px}
-    h2{color:#1F4E79}
-    h3{color:#2E75B6}
-    input,textarea,select{width:100%;padding:10px;margin:10px 0;font-size:14px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
+    :root{
+      --navy:#0A1628;
+      --navy-light:#152A47;
+      --red:#A31E22;
+      --red-dark:#7E1519;
+      --red-light:#C33338;
+      --blue:#2563EB;
+      --cream:#F7F5F0;
+      --ink:#1A1A1A;
+      --line:#E2E0DA;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;height:100%}
+    body{
+      font-family:'Roboto',Arial,sans-serif;
+      background:var(--cream);
+      color:var(--ink);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+
+    .top-bar{background:#0D0D0D;width:100%}
+    .top-bar-inner{max-width:1400px;margin:0 auto;padding:8px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:12.5px}
+    .top-bar-left{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+    .top-bar .logo-slot{width:110px;height:32px;flex-shrink:0;display:flex;align-items:center}
+    .top-bar .logo-slot img{max-width:110px;max-height:32px;object-fit:contain}
+    .top-bar h1{color:#fff;font-family:'Roboto',sans-serif;font-weight:600;font-size:15px;margin:0;white-space:nowrap}
+    .top-bar .contact-info{display:flex;align-items:center;gap:18px}
+    .top-bar .contact-info a{color:#D8D8D8;font-weight:400;display:flex;align-items:center;gap:6px;text-decoration:none}
+    .top-bar .contact-info a:hover{color:#fff}
+    .top-bar .contact-info svg{width:13px;height:13px;flex-shrink:0}
+    .top-bar nav{display:flex;align-items:center;gap:20px}
+    .top-bar nav a{color:#D8D8D8;font-weight:500;text-decoration:none}
+    .top-bar nav a:hover{color:#fff}
+    .top-bar nav a.contact-btn{background:var(--red);color:#fff;font-weight:700;font-size:11.5px;letter-spacing:.5px;padding:7px 16px;border-radius:2px;text-transform:uppercase}
+
+    /* Language toggle */
+    .lang-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .lang-toggle-row label{margin:0}
+    .lang-toggle{position:relative;display:inline-flex;background:#EFEDE7;border:1px solid var(--line);border-radius:999px;padding:3px;width:220px}
+    .lang-toggle-option{flex:1;text-align:center;padding:7px 10px;font-size:12.5px;font-weight:600;color:#8A8A8A;border-radius:999px;cursor:pointer;position:relative;z-index:2;transition:color .2s ease;user-select:none}
+    .lang-toggle-option.active{color:#fff}
+    .lang-toggle-slider{position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);background:var(--navy);border-radius:999px;transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:1}
+    .lang-toggle-slider.chinese{transform:translateX(100%)}
+    .lang-toggle-hint{font-size:11.5px;color:#8A8A8A;margin-top:4px}
+
+    /* Article view toggle (English/Chinese preview) */
+    .article-view-toggle{display:none;margin-bottom:10px}
+    .article-view-toggle .lang-toggle{width:200px}
+    .top-bar nav a.contact-btn:hover{opacity:.9;color:#fff}
+
+    .page-title-bar{background:var(--navy);width:100%;border-bottom:3px solid var(--red);margin-top:8px}
+    .page-title-inner{max-width:1400px;margin:0 auto;padding:22px 24px;text-align:center}
+    .page-title-bar h1{color:#fff;font-family:'Source Serif 4',serif;font-weight:600;font-size:22px;letter-spacing:.2px;margin:0}
+
+    .page-content{
+      max-width:900px;
+      width:100%;
+      margin:0 auto;
+      padding:32px 20px 60px;
+      flex:1 0 auto;
+    }
+
+    h2{font-family:'Source Serif 4',serif;color:var(--navy);font-weight:600;font-size:19px;border-bottom:2px solid var(--red);padding-bottom:8px;margin-top:0}
+    h3{font-family:'Source Serif 4',serif;color:var(--navy);font-weight:600;font-size:16px;border-left:4px solid var(--red);padding-left:10px}
+    input,textarea,select{width:100%;padding:10px 12px;margin:8px 0;font-size:14px;font-family:'Roboto',Arial,sans-serif;border:1px solid var(--line);border-radius:4px;box-sizing:border-box;background:#fff;color:var(--ink)}
+    input:focus,textarea:focus,select:focus{outline:none;border-color:var(--red)}
     textarea{height:120px;resize:vertical}
-    button{padding:12px 24px;margin:5px;font-size:14px;cursor:pointer;border:none;border-radius:6px}
-    .submit{background:#185FA5;color:white}
-    .approve{background:#0F6E56;color:white}
-    .reject{background:#A32D2D;color:white}
-    .resubmit{background:#854F0B;color:white}
-    #step1-box{margin-bottom:20px}
-    #article-box{display:none;margin-top:20px}
-    #review-box{display:none;margin-top:20px;background:#FFF3CD;padding:16px;border-radius:8px;border:1px solid #EF9F27}
-    #result-box{display:none;margin-top:20px;background:#E1F5EE;padding:16px;border-radius:8px}
-    #loading-box{display:none;margin-top:20px;background:#f5f5f5;padding:20px;border-radius:8px;text-align:center}
-    #loading-text{font-size:15px;color:#555;margin:0}
-    #article-display{background:#f5f5f5;padding:16px;border-radius:6px;font-size:14px;max-height:600px;overflow-y:auto;line-height:1.6}
-    .cost{background:#EBF5FB;padding:10px;border-radius:6px;margin:10px 0;font-size:13px}
-    .seo{background:#E1F5EE;padding:10px;border-radius:6px;margin:10px 0;font-size:13px}
-    .eeat{background:#F3E8FF;padding:10px;border-radius:6px;margin:10px 0;font-size:13px}
-    .unique{background:#FFF3CD;padding:10px;border-radius:6px;margin:10px 0;font-size:13px}
-    a{color:#0F6E56;font-weight:bold}
-    label{font-size:13px;font-weight:500;color:#333;margin-top:8px;display:block}
-    table{border-collapse:collapse;width:100%;margin-top:10px;font-size:13px}
-    th{background:#1F4E79;color:white;padding:8px;text-align:left}
-    td{padding:8px;border:1px solid #ccc;vertical-align:top}
-    tr:nth-child(even){background:#f9f9f9}
+    button{padding:11px 22px;margin:5px 5px 5px 0;font-size:13.5px;font-weight:700;letter-spacing:.2px;cursor:pointer;border:none;border-radius:4px;font-family:'Roboto',Arial,sans-serif;transition:opacity .15s,transform .1s;text-transform:uppercase}
+    button:hover{opacity:.9}
+    button:active{transform:translateY(1px)}
+    .submit{background:var(--red);color:#fff}
+    .approve{background:#2E6B4F;color:white}
+    .reject{background:var(--navy);color:white}
+    .resubmit{background:var(--red-light);color:#fff}
+    #step1-box{margin-bottom:20px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:24px;border-top:4px solid var(--red)}
+    #article-box{display:none;margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:24px;border-top:4px solid var(--red)}
+    #review-box{display:none;margin-top:20px;background:#FBEEEE;padding:20px;border-radius:6px;border:1px solid var(--red-light)}
+    #result-box{display:none;margin-top:20px;background:#EEF4F0;padding:20px;border-radius:6px;border:1px solid #B9D4C2}
+    #loading-box{display:none;margin-top:20px;background:#fff;border:1px solid var(--line);padding:28px;border-radius:6px;text-align:center}
+    #loading-text{font-size:14.5px;color:#555;margin:0}
+    #article-display{background:var(--cream);padding:18px;border-radius:4px;font-size:14px;max-height:600px;overflow-y:auto;line-height:1.65;color:var(--ink);border:1px solid var(--line)}
+    #article-display h1,#article-display h2,#article-display h3{font-family:'Source Serif 4',serif;color:var(--navy);border:none;padding:0}
+    #article-display p,#article-display strong{color:var(--ink);font-family:'Roboto',Arial,sans-serif}
+    #article-display p{text-align:justify}
+    #article-display a{color:var(--red);font-weight:600;text-decoration:underline}
+    .cost{background:#EEF2F7;border-left:3px solid var(--navy);padding:10px 14px;margin:10px 0;font-size:13px}
+    .seo{background:#EEF2F7;border-left:3px solid var(--navy-light);padding:10px 14px;margin:10px 0;font-size:13px}
+    .eeat{background:#FBEEEE;border-left:3px solid var(--red);padding:10px 14px;margin:10px 0;font-size:13px}
+    .unique{background:#FBEEEE;border-left:3px solid var(--red-light);padding:10px 14px;margin:10px 0;font-size:13px}
+    a{color:var(--red);font-weight:600}
+    label{font-size:13px;font-weight:600;color:var(--navy);margin-top:10px;display:block}
+    table{border-collapse:collapse;width:100%;table-layout:fixed;margin-top:10px;font-size:13px}
+    th{background:var(--navy);color:white;padding:9px 10px;text-align:left;font-weight:600;border:1px solid var(--navy)}
+    th:first-child,td:first-child{width:28%}
+    td{padding:9px 10px;border:1px solid var(--line);vertical-align:top;word-wrap:break-word;overflow-wrap:break-word}
+    tr:nth-child(even){background:var(--cream)}
     #summary-table{margin:10px 0}
-    .section-divider{border:none;border-top:1px solid #eee;margin:15px 0}
-    .optional-label{color:#888;font-weight:normal;font-size:12px;margin-left:4px}
+    .section-divider{border:none;border-top:1px solid var(--line);margin:18px 0}
+    .optional-label{color:#8A8578;font-weight:400;font-size:12px;margin-left:4px}
+    .info-label{color:var(--navy-light);font-size:12px;margin:4px 0 8px 0;display:block}
+    #revision-instructions-box{display:none;margin-top:8px}
+    .revision-type-btn{padding:10px 20px;margin:5px 5px 5px 0;font-size:13.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--line);border-radius:4px;background:white;color:var(--navy);text-transform:none}
+    .revision-type-btn.selected{border-color:var(--red);background:#FBEEEE;color:var(--red)}
+    #revision-type-buttons{margin:10px 0}
+    .link-row{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+    .link-row input{margin:0}
+    .link-row input.url-field{flex:2}
+    .link-row input.anchor-field{flex:1}
+    .link-box{background:var(--cream);border:1px solid var(--line);border-radius:4px;padding:10px;margin:6px 0}
+    .link-box-label{font-size:12px;font-weight:600;color:var(--red);display:block;margin-bottom:6px}
+    .page-item{padding:6px 8px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;cursor:pointer}
+    .page-item:hover{background:var(--cream)}
+    .page-item input[type="checkbox"]{width:auto;margin:0;flex-shrink:0}
+    .page-item label{font-size:12px;color:var(--ink);font-weight:400;cursor:pointer;margin:0;word-break:break-all;flex:1}
+
+    .footer-line{width:100%;height:6px;background:#0D0D0D;flex-shrink:0}
+
+    /* ---- Custom modal (replaces native alert/confirm) ---- */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.6);z-index:9999;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.active{display:flex}
+    .modal-box{background:#fff;border-radius:8px;max-width:420px;width:100%;padding:28px 26px 22px;text-align:center;border-top:4px solid var(--red);box-shadow:0 12px 40px rgba(0,0,0,.3);animation:modal-pop .15s ease-out}
+    @keyframes modal-pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+    .modal-icon{width:40px;height:40px;border-radius:50%;background:#FBEEEE;color:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:'Source Serif 4',serif;font-weight:700;font-size:20px}
+    .modal-box p{font-size:14.5px;color:var(--ink);line-height:1.6;margin:0 0 22px;font-family:'Roboto',Arial,sans-serif}
+    .modal-buttons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+    .modal-buttons button{margin:0}
   </style>
 </head>
 <body>
 
-<h2>SEO Content Agent</h2>
-
-<div id="step1-box">
-  <h3>Step 1 - Start a New Article</h3>
-  <label>Target Keyword (required)</label>
-  <input id="keyword" type="text" placeholder="e.g. best trail running shoes for flat feet"/>
-  <label>Content Topic Ideas / Notes <span class="optional-label">(optional)</span></label>
-  <textarea id="operator_topic_notes" placeholder="e.g. focus on budget options under $150, target beginners"></textarea>
-  <label>Target Country</label>
-  <select id="target_country">
-    <option value="us">United States</option>
-    <option value="gb">United Kingdom</option>
-    <option value="au">Australia</option>
-    <option value="nz">New Zealand</option>
-    <option value="ca">Canada</option>
-    <option value="lk">Sri Lanka</option>
-  </select>
-  <label>English Variety</label>
-  <select id="english_variety">
-    <option value="American">American English</option>
-    <option value="British">British English</option>
-    <option value="Australian">Australian English</option>
-    <option value="Canadian">Canadian English</option>
-  </select>
-  <hr class="section-divider">
-  <label>Internal Link 1 URL <span class="optional-label">(optional)</span></label>
-  <input id="internal_link_1" type="text" placeholder="e.g. https://yoursite.com/related-article"/>
-  <label>Internal Link 2 URL <span class="optional-label">(optional)</span></label>
-  <input id="internal_link_2" type="text" placeholder="e.g. https://yoursite.com/another-article"/>
-  <hr class="section-divider">
-  <button class="submit" onclick="submitKeyword()">Research and Generate Article</button>
+<div class="top-bar" style="display:none">
+  <div class="top-bar-inner">
+    <div class="top-bar-left">
+      <div class="logo-slot"><img src="https://pas2008.co.nz/wp-content/uploads/2020/07/Premium-Accounting-Solutions-e1594690618232.png" alt="Premium Accounting Solution logo"></div>
+      <h1>Premium Accounting Solution</h1>
+      <div class="contact-info">
+        <a href="tel:0303032868">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          09 303 2868
+        </a>
+        <a href="mailto:info@pas2008.co.nz">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" fill="none"/><path d="M22 6l-10 7L2 6"/><path d="M2 6h20v12H2z"/></svg>
+          info@pas2008.co.nz
+        </a>
+      </div>
+    </div>
+    <nav>
+      <a href="https://pas2008.co.nz/accounting-packages" target="_blank">Packages</a>
+      <a href="https://pas2008.co.nz/shop" target="_blank">Shop</a>
+      <a href="https://pas2008.co.nz/forms" target="_blank">Forms</a>
+      <a href="https://pas2008.co.nz/category/blog" target="_blank">Blog</a>
+      <a href="https://pas2008.co.nz/income-tax-calculator" target="_blank">Calculators</a>
+      <a href="https://pas2008.co.nz/about-us" target="_blank">About</a>
+      <a href="https://pas2008.co.nz/contact-us" target="_blank" class="contact-btn">Contact Us</a>
+    </nav>
+  </div>
 </div>
 
-<div id="loading-box">
-  <p id="loading-text">Running full pipeline... this takes 3-5 minutes</p>
+<div class="page-title-bar">
+  <div class="page-title-inner">
+    <h1>Generate an Article</h1>
+  </div>
 </div>
 
-<div id="article-box">
-  <h3>Step 2 - Generated Article</h3>
-  <div class="unique" id="unique-display"></div>
-  <div class="cost" id="cost-display"></div>
-  <div class="seo" id="seo-display"></div>
-  <div class="eeat" id="eeat-display"></div>
-  <h3>Article Summary</h3>
-  <div id="summary-table"></div>
-  <h3>Article</h3>
-  <div id="article-display"></div>
-  <h3>Step 3 - Human Review</h3>
-  <p>Read the article and review all scores above. Is it acceptable to publish?</p>
-  <button class="approve" onclick="showApprove()">Approve and Save to Google Docs</button>
-  <button class="reject" onclick="showReview()">Request Revisions</button>
+<div class="page-content">
+
+  <div id="step1-box">
+    <h3>Step 1 - Start a New Article</h3>
+
+    <div class="lang-toggle-row" style="display:none">
+      <div>
+        <label style="display:block">Output Language</label>
+        <div class="lang-toggle-hint" id="lang-hint">Article will be researched, written and reviewed in English</div>
+      </div>
+      <div class="lang-toggle" onclick="toggleLanguage()">
+        <div class="lang-toggle-slider" id="lang-slider"></div>
+        <div class="lang-toggle-option active" id="lang-option-en">English</div>
+        <div class="lang-toggle-option" id="lang-option-zh">中文</div>
+      </div>
+    </div>
+
+    <label>Client Website URL (required)</label>
+    <input id="client_website" type="url" placeholder="e.g. https://pas2008.co.nz/"/>
+
+    
+    <label>Target Keyword (required)</label>
+    <input id="keyword" type="text" placeholder="e.g. how to file a GST return in New Zealand"/>
+    <label>Topic <span class="optional-label">(optional)</span></label>
+    <input id="topic" type="text" placeholder="e.g. GST Return Filing in New Zealand: Deadlines, Requirements and Common Mistakes"/>
+    <label>Company Insight <span class="optional-label">(optional)</span></label>
+    <textarea id="operator_topic_notes" placeholder="e.g. focus on small business owners, mention IRD deadlines, avoid overly technical tax jargon"></textarea>
+    <label>Target Audience <span class="optional-label">(optional)</span></label>
+    <input id="target_audience" type="text" placeholder="e.g. small business owners in Auckland, first-time company directors, contractors and self-employed individuals"/>
+    <label>Target Word Count <span class="optional-label">(optional)</span></label>
+    <select id="word_count">
+      <option value="1000">1000 words</option>
+      <option value="1300" selected>1300 words (default)</option>
+      <option value="1500">1500 words</option>
+      <option value="2000">2000 words</option>
+      <option value="2500">2500 words</option>
+      <option value="3000">3000 words</option>
+    </select>
+    <label>Target Country <span class="optional-label">(optional)</span></label>
+    <select id="target_country">
+      <option value="global" selected>Global / Worldwide (no specific country)</option>
+      <option value="us">United States</option>
+      <option value="gb">United Kingdom</option>
+      <option value="au">Australia</option>
+      <option value="nz">New Zealand</option>
+      <option value="ca">Canada</option>
+      <option value="lk">Sri Lanka</option>
+    </select>
+    <label>English Variety <span class="optional-label">(optional)</span></label>
+    <select id="english_variety">
+      <option value="British" selected>British English</option>
+      <option value="American">American English</option>
+      <option value="Australian">Australian English</option>
+      <option value="Canadian">Canadian English</option>
+    </select>
+    <hr class="section-divider">
+    <button class="submit" onclick="submitKeyword()">Research and Generate Article</button>
+  </div>
+
+  <div id="loading-box">
+    <p id="loading-text">Running full pipeline...</p>
+  </div>
+
+  <div id="article-box">
+    <h3>Step 2 - Generated Article</h3>
+    <div class="unique" id="unique-display"></div>
+    <div class="cost" id="cost-display"></div>
+    <div class="seo" id="seo-display"></div>
+    <div class="eeat" id="eeat-display"></div>
+    <h3>Article Summary</h3>
+    <div id="summary-table"></div>
+    <h3>Article</h3>
+    <div class="article-view-toggle" id="article-view-toggle">
+      <div class="lang-toggle" onclick="toggleArticleView()">
+        <div class="lang-toggle-slider" id="article-view-slider"></div>
+        <div class="lang-toggle-option active" id="article-view-option-en">English</div>
+        <div class="lang-toggle-option" id="article-view-option-zh">中文</div>
+      </div>
+    </div>
+    <div id="article-display"></div>
+    <h3>Step 3 - Human Review</h3>
+    <p>Read the article and review all scores above. Is it acceptable to publish?</p>
+    <button class="approve" onclick="showApprove()">Approve and Save to Google Docs</button>
+    <button class="reject" onclick="showReview()">Request Revisions</button>
+  </div>
+
+  <div id="review-box">
+    <h3>Request Revisions</h3>
+    <p>Select the type of revision needed:</p>
+    <div id="revision-type-buttons">
+      <button class="revision-type-btn" onclick="selectRevisionType('minor_edit', this)">Minor Edit</button>
+      <button class="revision-type-btn" onclick="selectRevisionType('new_angle', this)">New Angle</button>
+      <button class="revision-type-btn" onclick="selectRevisionType('less_ai', this)">Make it Less AI</button>
+    </div>
+    <div id="revision-instructions-box" style="display:none">
+      <label>Revision Instructions (required)</label>
+      <textarea id="revision_instructions" placeholder="e.g. Shorten the introduction. Add a section on GST filing deadlines."></textarea>
+    </div>
+    <div id="new-angle-box" style="display:none;background:#E8F4FD;padding:12px;border-radius:6px;margin:10px 0;border:1px solid #185FA5">
+      <label style="color:#185FA5;font-weight:600">Your Unique Angle / Human Insight (required)</label>
+      <p style="font-size:12px;color:#555;margin:4px 0 8px 0">Provide a unique insight only you or your client could know — first-hand data, a contrarian opinion with evidence, or an angle no competitor has covered.</p>
+      <textarea id="new_angle_instructions" placeholder="e.g. Based on our client data, businesses that file provisional tax early avoid 80% of late-payment penalties we see each year..."></textarea>
+    </div>
+    <input type="hidden" id="revision_type" value=""/>
+    <br/>
+    <button class="resubmit" onclick="submitRevision()">Submit Revision Request</button>
+    <button class="submit" onclick="hideReview()">Go back to article</button>
+    <button class="reject" onclick="changeKeyword()">Change Keyword - Start Over</button>
+  </div>
+
+  <div id="result-box">
+    <h3>Article saved to Google Docs</h3>
+    <p id="doc-link"></p>
+    <button class="submit" onclick="startOver()">Start new article</button>
+  </div>
+
 </div>
 
-<div id="review-box">
-  <h3>Request Revisions</h3>
-  <label>Revision Instructions (required)</label>
-  <textarea id="revision_instructions" placeholder="e.g. Shorten the introduction. Add a section comparing matcha vs sencha. Make the tone less formal."></textarea>
-  <label>Revision Type (required)</label>
-  <select id="revision_type">
-    <option value="minor_edit">Minor edit (tone/length) - only rewrites the article, no Ahrefs calls</option>
-    <option value="new_angle">New angle needed - regenerates unique factor, brief and article</option>
-  </select>
-  <button class="resubmit" onclick="submitRevision()">Submit Revision Request</button>
-  <button class="submit" onclick="hideReview()">Go back to article</button>
-  <button class="reject" onclick="changeKeyword()">Change Keyword - Start Over</button>
-</div>
+<div class="footer-line"></div>
 
-<div id="result-box">
-  <h3>Article saved to Google Docs</h3>
-  <p id="doc-link"></p>
-  <button class="submit" onclick="startOver()">Start new article</button>
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">!</div>
+    <p id="modal-message"></p>
+    <div class="modal-buttons" id="modal-buttons"></div>
+  </div>
 </div>
 
 <script>
-  const WEBHOOK_URL = 'https://sharmini0305.app.n8n.cloud/webhook-test/46f643b2-94e4-4361-9966-06a61fed2d66';
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+  }
 
-  let currentData    = {};
-  let currentKeyword = '';
-  let currentNotes   = '';
-  let currentCountry = 'us';
-  let currentEnglish = 'American';
-  let currentLink1   = '';
-  let currentLink2   = '';
+  function showAlertModal(message) {
+    document.getElementById('modal-icon').textContent = '!';
+    document.getElementById('modal-message').textContent = message;
+    const buttons = document.getElementById('modal-buttons');
+    buttons.innerHTML = '';
+    const okBtn = document.createElement('button');
+    okBtn.textContent = 'OK';
+    okBtn.className = 'submit';
+    okBtn.onclick = closeModal;
+    buttons.appendChild(okBtn);
+    document.getElementById('modal-overlay').classList.add('active');
+  }
 
+  function showConfirmModal(message, onConfirm) {
+    document.getElementById('modal-icon').textContent = '?';
+    document.getElementById('modal-message').textContent = message;
+    const buttons = document.getElementById('modal-buttons');
+    buttons.innerHTML = '';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'reject';
+    cancelBtn.onclick = closeModal;
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = 'Confirm';
+    confirmBtn.className = 'approve';
+    confirmBtn.onclick = function() { closeModal(); onConfirm(); };
+    buttons.appendChild(cancelBtn);
+    buttons.appendChild(confirmBtn);
+    document.getElementById('modal-overlay').classList.add('active');
+  }
+
+  //const WEBHOOK_URL = 'https://n8n-fmid.srv1801788.hstgr.cloud/webhook-test/66d3edf1-88f7-4058-b01c-431411762f5a';
+const WEBHOOK_URL = 'https://n8n-fmid.srv1801788.hstgr.cloud/webhook/c8de92bd-d098-436e-98cd-858c7a2d6563';
+  let currentData       = {};
+  let currentKeyword    = '';
+  let currentTopic      = '';
+  let currentNotes      = '';
+  let currentCountry    = 'global';
+  let currentEnglish    = 'British';
+  let currentClientName = '';
+
+  function getClientName(url) {
+    if (!url) return 'Client';
+    try {
+      const domain = new URL(url).hostname.replace('www.', '').split('.')[0];
+      return domain.charAt(0).toUpperCase() + domain.slice(1);
+    } catch(e) { return 'Client'; }
+  }
+
+  let outputLanguage = 'English';
+  function toggleLanguage() {
+    outputLanguage = outputLanguage === 'English' ? 'Chinese' : 'English';
+    const isZh = outputLanguage === 'Chinese';
+    document.getElementById('lang-slider').classList.toggle('chinese', isZh);
+    document.getElementById('lang-option-en').classList.toggle('active', !isZh);
+    document.getElementById('lang-option-zh').classList.toggle('active', isZh);
+    document.getElementById('lang-hint').textContent = isZh
+      ? 'Article will be researched, written and reviewed in English, then translated to Simplified Chinese with matching internal links'
+      : 'Article will be researched, written and reviewed in English';
+  }
+
+  let currentArticleEn = '';
+  let currentArticleZh = '';
+  let articleViewIsZh = false;
+  function toggleArticleView() {
+    if (!currentArticleZh) return;
+    articleViewIsZh = !articleViewIsZh;
+    document.getElementById('article-view-slider').classList.toggle('chinese', articleViewIsZh);
+    document.getElementById('article-view-option-en').classList.toggle('active', !articleViewIsZh);
+    document.getElementById('article-view-option-zh').classList.toggle('active', articleViewIsZh);
+    document.getElementById('article-display').innerHTML = articleViewIsZh ? currentArticleZh : currentArticleEn;
+  }
+
+  function selectRevisionType(type, btn) {
+    document.getElementById('revision_type').value = type;
+    document.querySelectorAll('.revision-type-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('revision-instructions-box').style.display = 'none';
+    document.getElementById('new-angle-box').style.display = 'none';
+    document.getElementById('revision_instructions').value = '';
+    document.getElementById('new_angle_instructions').value = '';
+    if (type === 'minor_edit') {
+      document.getElementById('revision-instructions-box').style.display = 'block';
+    } else if (type === 'new_angle') {
+      document.getElementById('new-angle-box').style.display = 'block';
+    }
+  }
+
+  window.addEventListener('beforeunload', function(e) {
+    if (pipelineRunning) {
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
+
+  let pipelineRunning = false;
   function showLoading(message) {
+    pipelineRunning = true;
     document.getElementById('step1-box').style.display   = 'none';
     document.getElementById('article-box').style.display = 'none';
     document.getElementById('review-box').style.display  = 'none';
     document.getElementById('result-box').style.display  = 'none';
-    document.getElementById('loading-text').innerText    = message || 'Running full pipeline... this takes 3-5 minutes';
+    document.getElementById('loading-text').innerText    = message || 'Running full pipeline...';
     document.getElementById('loading-box').style.display = 'block';
   }
 
   function hideLoading() {
+    pipelineRunning = false;
     document.getElementById('loading-box').style.display = 'none';
   }
 
   async function submitKeyword() {
-    const keyword = document.getElementById('keyword').value.trim();
-    const notes   = document.getElementById('operator_topic_notes').value.trim();
-    const country = document.getElementById('target_country').value;
-    const english = document.getElementById('english_variety').value;
-    const link1   = document.getElementById('internal_link_1').value.trim();
-    const link2   = document.getElementById('internal_link_2').value.trim();
-
-    if (!keyword) { alert('Please enter a keyword first'); return; }
-
-    currentKeyword = keyword;
-    currentNotes   = notes;
-    currentCountry = country;
-    currentEnglish = english;
-    currentLink1   = link1;
-    currentLink2   = link2;
-
-    showLoading('Running full pipeline... this takes 3-5 minutes');
-
+    const keyword       = document.getElementById('keyword').value.trim();
+    const topic         = document.getElementById('topic').value.trim();
+    const notes         = document.getElementById('operator_topic_notes').value.trim();
+    const country       = document.getElementById('target_country').value;
+    const english       = document.getElementById('english_variety').value;
+    const clientWebsite = document.getElementById('client_website').value.trim();
+    const wordCount     = document.getElementById('word_count').value || '1300';
+    const targetAudience = document.getElementById('target_audience').value.trim();
+    if (!keyword) { showAlertModal('Please enter a keyword first'); return; }
+    currentKeyword    = keyword;
+    currentTopic      = topic;
+    currentNotes      = notes;
+    currentCountry    = country;
+    currentEnglish    = english;
+    currentClientName = getClientName(clientWebsite);
+    showLoading('Running full pipeline...');
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action:               'generate',
+          output_language:      outputLanguage,
           keyword:              keyword,
+          topic:                topic,
           operator_topic_notes: notes,
           target_country:       country,
           english_variety:      english,
-          internal_link_1:      link1,
-          internal_link_2:      link2
+          client_website:       clientWebsite,
+          client_name:          currentClientName,
+          target_audience:      targetAudience,
+          word_count:           wordCount
         })
       });
-
       const raw = await res.text();
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch(e) {
-        console.error('JSON parse error:', raw.substring(0, 500));
-        alert('Response parsing error. Check console for details.');
+      try { data = JSON.parse(raw); } catch(e) {
+        showAlertModal('Response parsing error. Check console for details.');
         hideLoading();
         document.getElementById('step1-box').style.display = 'block';
         return;
       }
-
       const item = Array.isArray(data) ? (data[0].json || data[0]) : data;
       currentData = item;
-
       hideLoading();
       displayArticle(item);
       document.getElementById('article-box').style.display = 'block';
-
     } catch(e) {
       console.error(e);
-      alert('Something went wrong. Check your webhook URL and try again.');
+      showAlertModal('Something went wrong. Check your webhook URL and try again.');
       hideLoading();
       document.getElementById('step1-box').style.display = 'block';
     }
@@ -198,14 +476,8 @@
   function displayArticle(item) {
     document.getElementById('unique-display').innerHTML =
       '<strong>Unique Factor:</strong> ' + (item.unique_factor || 'N/A');
-
     document.getElementById('cost-display').innerHTML =
-      '<strong>Cost:</strong> ' + (item.article_cost || '$0.00') +
-      ' | Claude: ' + (item.claude_cost || '$0.00') +
-      ' | Ahrefs: ' + (item.ahrefs_cost || '$0.00') +
-      ' | Input tokens: ' + (item.inputTokens || 0) +
-      ' | Output tokens: ' + (item.outputTokens || 0);
-
+      '<strong>Total Cost (all steps so far):</strong> ' + (item.article_cost || '$0.00');
     const seo = item.seo_check || {};
     document.getElementById('seo-display').innerHTML =
       '<strong>SEO Check:</strong>' +
@@ -213,7 +485,6 @@
       ' | Keyword in heading: ' + (seo.keyword_in_heading ? 'Yes' : 'No') +
       ' | Density: ' + (seo.keyword_density || 'N/A') +
       ' | Word count: ' + (seo.total_words || 0);
-
     const eeat = item.eeat_score || {};
     document.getElementById('eeat-display').innerHTML =
       '<strong>E-E-A-T Score:</strong>' +
@@ -222,8 +493,6 @@
       ' | Expertise: ' + (eeat.expertise || 0) +
       ' | Authority: ' + (eeat.authoritativeness || 0) +
       ' | Trust: ' + (eeat.trustworthiness || 0);
-
-    const contentGaps = (item.content_gaps || '').substring(0, 300) + '...';
     document.getElementById('summary-table').innerHTML = `
       <table>
         <tr><th>Field</th><th>Value</th></tr>
@@ -232,22 +501,40 @@
         <tr><td><strong>Keyword Difficulty</strong></td><td>${item.keyword_difficulty || ''}</td></tr>
         <tr><td><strong>Secondary Keywords</strong></td><td>${item.secondary_keywords || ''}</td></tr>
         <tr><td><strong>Unique Factor</strong></td><td>${item.unique_factor || ''}</td></tr>
-        <tr><td><strong>Content Gaps</strong></td><td>${contentGaps}</td></tr>
+        <tr><td><strong>Internal Links Used</strong></td><td>${item.internal_links_used || 'None'}</td></tr>
+        <tr><td><strong>External Links Used</strong></td><td>${item.external_links_found || 'None'}</td></tr>
+        <tr><td><strong>FAQ Sources</strong></td><td>${(item.faq_sources || []).join('<br>') || 'None'}</td></tr>
         <tr><td><strong>E-E-A-T Overall</strong></td><td>${(item.eeat_score || {}).overall || ''}/10</td></tr>
+        <tr><td><strong>AI Detection</strong></td><td>${item.ai_detection_score !== null && item.ai_detection_score !== undefined ? item.ai_detection_score + '% - ' + (item.ai_detection_verdict || '') : 'Not checked'}</td></tr>
         <tr><td><strong>Total Cost</strong></td><td>${item.article_cost || ''}</td></tr>
       </table>
     `;
-
-    document.getElementById('article-display').innerHTML = item.article || '';
+    // Store both language versions; show the toggle only when a Chinese version exists
+    currentArticleEn = item.article || '';
+    currentArticleZh = item.article_zh || '';
+    if (currentArticleZh) {
+      document.getElementById('article-view-toggle').style.display = 'block';
+      articleViewIsZh = false;
+      document.getElementById('article-view-slider').classList.remove('chinese');
+      document.getElementById('article-view-option-en').classList.add('active');
+      document.getElementById('article-view-option-zh').classList.remove('active');
+    } else {
+      document.getElementById('article-view-toggle').style.display = 'none';
+    }
+    document.getElementById('article-display').innerHTML = currentArticleEn;
   }
 
   function showApprove() {
-    if (confirm('Approve this article and save to Google Docs?')) {
-      submitApproval();
-    }
+    showConfirmModal('Approve this article and save to Google Docs?', submitApproval);
   }
 
   function showReview() {
+    document.getElementById('revision_type').value = '';
+    document.querySelectorAll('.revision-type-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('revision-instructions-box').style.display = 'none';
+    document.getElementById('new-angle-box').style.display = 'none';
+    document.getElementById('revision_instructions').value = '';
+    document.getElementById('new_angle_instructions').value = '';
     document.getElementById('review-box').style.display  = 'block';
     document.getElementById('article-box').style.display = 'none';
   }
@@ -257,239 +544,297 @@
     document.getElementById('article-box').style.display = 'block';
   }
 
-  function changeKeyword() {
-    document.getElementById('review-box').style.display   = 'none';
-    document.getElementById('article-box').style.display  = 'none';
+  function resetForm() {
     document.getElementById('keyword').value              = '';
+    document.getElementById('topic').value                 = '';
     document.getElementById('operator_topic_notes').value = '';
-    document.getElementById('internal_link_1').value      = '';
-    document.getElementById('internal_link_2').value      = '';
-    document.getElementById('step1-box').style.display    = 'block';
-    currentKeyword = '';
-    currentNotes   = '';
-    currentCountry = 'us';
-    currentEnglish = 'American';
-    currentLink1   = '';
-    currentLink2   = '';
-    currentData    = {};
+    document.getElementById('client_website').value       = '';
+    const taField = document.getElementById('target_audience'); if(taField) taField.value = '';
+    currentKeyword = ''; currentTopic = ''; currentNotes = ''; currentCountry = 'global';
+    currentEnglish = 'British'; currentClientName = '';
+    currentData = {};
+  }
+
+  function changeKeyword() {
+    document.getElementById('review-box').style.display  = 'none';
+    document.getElementById('article-box').style.display = 'none';
+    resetForm();
+    document.getElementById('step1-box').style.display   = 'block';
+    document.getElementById('target_audience').value = '';
   }
 
   async function submitRevision() {
-    const instructions = document.getElementById('revision_instructions').value.trim();
     const revisionType = document.getElementById('revision_type').value;
-
-    if (!instructions) {
-      alert('Please describe what needs to be changed');
+    const instructions = document.getElementById('revision_instructions').value.trim();
+    if (!revisionType) { showAlertModal('Please select a revision type first'); return; }
+    if (revisionType === 'minor_edit' && !instructions) {
+      showAlertModal('Please describe what needs to be changed'); return;
+    }
+    if (revisionType === 'new_angle') {
+      const newAngleInstructions = document.getElementById('new_angle_instructions').value.trim();
+      if (!newAngleInstructions) {
+        showAlertModal('Please provide your unique angle or human insight before submitting'); return;
+      }
+      hideReview();
+      await submitNewAngle(newAngleInstructions);
       return;
     }
-
-    document.getElementById('revision_instructions').value = '';
     hideReview();
-
     if (revisionType === 'minor_edit') {
       await submitMinorEdit(instructions);
-    } else if (revisionType === 'new_angle') {
-      await submitNewAngle(instructions);
+    } else if (revisionType === 'less_ai') {
+      await submitLessAI('');
     }
   }
 
   async function submitMinorEdit(instructions) {
-    showLoading('Rewriting article... this takes about 30 seconds');
-
+    showLoading('Rewriting article...');
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action:                'minor_edit',
-          revision_instructions: instructions,
-          keyword:               currentKeyword,
-          article:               currentData.article              || '',
-          unique_factor:         currentData.unique_factor        || '',
-          content_brief:         currentData.content_brief        || '',
-          content_gaps:          currentData.content_gaps         || '',
-          secondary_keywords:    currentData.secondary_keywords   || '',
-          search_volume:         currentData.search_volume        || 0,
-          keyword_difficulty:    currentData.keyword_difficulty   || 0,
-          operator_topic_notes:  currentData.operator_topic_notes || '',
-          english_variety:       currentEnglish,
-          internal_link_1:       currentLink1,
-          internal_link_2:       currentLink2,
-          seo_check:             currentData.seo_check            || {},
-          eeat_score:            currentData.eeat_score           || {},
-          article_cost:          currentData.article_cost         || '',
-          inputTokens:           currentData.inputTokens          || 0,
-          outputTokens:          currentData.outputTokens         || 0
+          action:                 'minor_edit',
+          revision_instructions:  instructions,
+          keyword:                currentKeyword,
+          topic:                  currentTopic                      || currentData.topic || '',
+          target_country:         currentCountry,
+          article:                currentData.article               || '',
+          unique_factor:          currentData.unique_factor         || '',
+          content_brief:          currentData.content_brief         || '',
+          content_gaps:           currentData.content_gaps          || '',
+          secondary_keywords:     currentData.secondary_keywords    || '',
+          search_volume:          currentData.search_volume         || 0,
+          keyword_difficulty:     currentData.keyword_difficulty    || 0,
+          operator_topic_notes:   currentData.operator_topic_notes  || '',
+          english_variety:        currentEnglish,
+          internal_links:         currentData.internal_links        || [],
+          internal_link_1:        currentData.internal_link_1       || '',
+          internal_link_2:        currentData.internal_link_2       || '',
+          internal_link_3:        currentData.internal_link_3       || '',
+          internal_link_4:        currentData.internal_link_4       || '',
+          internal_anchor_text_1: currentData.internal_anchor_text_1 || '',
+          internal_anchor_text_2: currentData.internal_anchor_text_2 || '',
+          internal_anchor_text_3: currentData.internal_anchor_text_3 || '',
+          internal_anchor_text_4: currentData.internal_anchor_text_4 || '',
+          external_links_found:   currentData.external_links_found  || '',
+          client_name:            currentClientName,
+          word_count:             currentData.word_count            || '1300',
+          seo_check:              currentData.seo_check             || {},
+          eeat_score:             currentData.eeat_score            || {},
+          article_cost:           currentData.article_cost          || '',
+          real_questions:         currentData.real_questions        || [],
+          output_language:        outputLanguage,
+          faq_sources:            currentData.faq_sources           || [],
+          inputTokens:            currentData.inputTokens           || 0,
+          outputTokens:           currentData.outputTokens          || 0,
+          target_audience:        currentData.target_audience       || '',
+          utility_pages:          currentData.utility_pages         || []
         })
       });
-
       const raw = await res.text();
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch(e) {
-        console.error('JSON parse error:', raw.substring(0, 500));
-        alert('Response parsing error. Check console.');
-        hideLoading();
-        document.getElementById('article-box').style.display = 'block';
-        return;
+      try { data = JSON.parse(raw); } catch(e) {
+        showAlertModal('Response parsing error.');
+        hideLoading(); document.getElementById('article-box').style.display = 'block'; return;
       }
-
       const item = Array.isArray(data) ? (data[0].json || data[0]) : data;
-      currentData = item;
-
-      hideLoading();
-      displayArticle(item);
+      currentData = item; hideLoading(); displayArticle(item);
       document.getElementById('article-box').style.display = 'block';
-
     } catch(e) {
-      console.error(e);
-      alert('Something went wrong. Try again.');
-      hideLoading();
-      document.getElementById('article-box').style.display = 'block';
+      console.error(e); showAlertModal('Something went wrong. Try again.');
+      hideLoading(); document.getElementById('article-box').style.display = 'block';
     }
   }
 
   async function submitNewAngle(instructions) {
-    showLoading('Generating new angle... this takes about 2 minutes');
-
+    showLoading('Generating new angle...');
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action:                'new_angle',
-          revision_instructions: instructions,
-          keyword:               currentKeyword,
-          content_gaps:          currentData.content_gaps         || '',
-          competitor_summary:    currentData.competitor_summary   || '',
-          secondary_keywords:    currentData.secondary_keywords   || '',
-          search_volume:         currentData.search_volume        || 0,
-          keyword_difficulty:    currentData.keyword_difficulty   || 0,
-          operator_topic_notes:  currentData.operator_topic_notes || '',
-          english_variety:       currentEnglish,
-          internal_link_1:       currentLink1,
-          internal_link_2:       currentLink2,
-          article:               currentData.article              || '',
-          unique_factor:         currentData.unique_factor        || '',
-          content_brief:         currentData.content_brief        || '',
-          seo_check:             currentData.seo_check            || {},
-          eeat_score:            currentData.eeat_score           || {},
-          article_cost:          currentData.article_cost         || '',
-          inputTokens:           currentData.inputTokens          || 0,
-          outputTokens:          currentData.outputTokens         || 0
+          action:                 'new_angle',
+          revision_instructions:  instructions,
+          keyword:                currentKeyword,
+          topic:                  currentTopic                      || currentData.topic || '',
+          target_country:         currentCountry,
+          content_gaps:           currentData.content_gaps          || '',
+          competitor_summary:     currentData.competitor_summary    || '',
+          secondary_keywords:     currentData.secondary_keywords    || '',
+          search_volume:          currentData.search_volume         || 0,
+          keyword_difficulty:     currentData.keyword_difficulty    || 0,
+          operator_topic_notes:   currentData.operator_topic_notes  || '',
+          english_variety:        currentEnglish,
+          internal_links:         currentData.internal_links        || [],
+          internal_link_1:        currentData.internal_link_1       || '',
+          internal_link_2:        currentData.internal_link_2       || '',
+          internal_link_3:        currentData.internal_link_3       || '',
+          internal_link_4:        currentData.internal_link_4       || '',
+          internal_anchor_text_1: currentData.internal_anchor_text_1 || '',
+          internal_anchor_text_2: currentData.internal_anchor_text_2 || '',
+          internal_anchor_text_3: currentData.internal_anchor_text_3 || '',
+          internal_anchor_text_4: currentData.internal_anchor_text_4 || '',
+          client_name:            currentClientName,
+          article:                currentData.article               || '',
+          unique_factor:          currentData.unique_factor         || '',
+          content_brief:          currentData.content_brief         || '',
+          word_count:             currentData.word_count            || '1300',
+          seo_check:              currentData.seo_check             || {},
+          eeat_score:             currentData.eeat_score            || {},
+          article_cost:           currentData.article_cost          || '',
+          real_questions:         currentData.real_questions        || [],
+          output_language:        outputLanguage,
+          faq_sources:            currentData.faq_sources           || [],
+          inputTokens:            currentData.inputTokens           || 0,
+          outputTokens:           currentData.outputTokens          || 0,
+          target_audience:        currentData.target_audience       || '',
+          utility_pages:          currentData.utility_pages         || [],
+          external_links_found:   currentData.external_links_found  || ''
         })
       });
-
       const raw = await res.text();
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch(e) {
-        console.error('JSON parse error:', raw.substring(0, 500));
-        alert('Response parsing error. Check console.');
-        hideLoading();
-        document.getElementById('article-box').style.display = 'block';
-        return;
+      try { data = JSON.parse(raw); } catch(e) {
+        showAlertModal('Response parsing error.');
+        hideLoading(); document.getElementById('article-box').style.display = 'block'; return;
       }
-
       const item = Array.isArray(data) ? (data[0].json || data[0]) : data;
-      currentData = item;
-
-      hideLoading();
-      displayArticle(item);
+      currentData = item; hideLoading(); displayArticle(item);
       document.getElementById('article-box').style.display = 'block';
-
     } catch(e) {
-      console.error(e);
-      alert('Something went wrong. Try again.');
-      hideLoading();
+      console.error(e); showAlertModal('Something went wrong. Try again.');
+      hideLoading(); document.getElementById('article-box').style.display = 'block';
+    }
+  }
+
+  async function submitLessAI(instructions) {
+    showLoading('Running humanizer to reduce AI detection...');
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action:                 'less_ai',
+          revision_instructions:  instructions,
+          keyword:                currentKeyword,
+          topic:                  currentTopic                      || currentData.topic || '',
+          target_country:         currentCountry,
+          article:                currentData.article               || '',
+          unique_factor:          currentData.unique_factor         || '',
+          content_brief:          currentData.content_brief         || '',
+          content_gaps:           currentData.content_gaps          || '',
+          secondary_keywords:     currentData.secondary_keywords    || '',
+          search_volume:          currentData.search_volume         || 0,
+          keyword_difficulty:     currentData.keyword_difficulty    || 0,
+          operator_topic_notes:   currentData.operator_topic_notes  || '',
+          english_variety:        currentEnglish,
+          internal_links:         currentData.internal_links        || [],
+          internal_link_1:        currentData.internal_link_1       || '',
+          internal_link_2:        currentData.internal_link_2       || '',
+          internal_link_3:        currentData.internal_link_3       || '',
+          internal_link_4:        currentData.internal_link_4       || '',
+          internal_anchor_text_1: currentData.internal_anchor_text_1 || '',
+          internal_anchor_text_2: currentData.internal_anchor_text_2 || '',
+          internal_anchor_text_3: currentData.internal_anchor_text_3 || '',
+          internal_anchor_text_4: currentData.internal_anchor_text_4 || '',
+          client_name:            currentClientName,
+          word_count:             currentData.word_count            || '1300',
+          seo_check:              currentData.seo_check             || {},
+          eeat_score:             currentData.eeat_score            || {},
+          article_cost:           currentData.article_cost          || '',
+          real_questions:         currentData.real_questions        || [],
+          output_language:        outputLanguage,
+          faq_sources:            currentData.faq_sources           || [],
+          inputTokens:            currentData.inputTokens           || 0,
+          outputTokens:           currentData.outputTokens          || 0,
+          target_audience:        currentData.target_audience       || '',
+          utility_pages:          currentData.utility_pages         || []
+        })
+      });
+      const raw = await res.text();
+      let data;
+      try { data = JSON.parse(raw); } catch(e) {
+        showAlertModal('Response parsing error.');
+        hideLoading(); document.getElementById('article-box').style.display = 'block'; return;
+      }
+      const item = Array.isArray(data) ? (data[0].json || data[0]) : data;
+      currentData = item; hideLoading(); displayArticle(item);
       document.getElementById('article-box').style.display = 'block';
+    } catch(e) {
+      console.error(e); showAlertModal('Something went wrong. Try again.');
+      hideLoading(); document.getElementById('article-box').style.display = 'block';
     }
   }
 
   async function submitApproval() {
     showLoading('Saving to Google Docs...');
-
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action:                'approved',
-          keyword:               currentKeyword,
-          article:               currentData.article              || '',
-          unique_factor:         currentData.unique_factor        || '',
-          content_brief:         currentData.content_brief        || '',
-          content_gaps:          currentData.content_gaps         || '',
-          secondary_keywords:    currentData.secondary_keywords   || '',
-          search_volume:         currentData.search_volume        || 0,
-          keyword_difficulty:    currentData.keyword_difficulty   || 0,
-          operator_topic_notes:  currentData.operator_topic_notes || '',
-          competitor_summary:    currentData.competitor_summary   || '',
-          internal_link_1:       currentLink1                     || '',
-          internal_link_2:       currentLink2                     || '',
-          internal_links_used:   currentData.internal_links_used  || '',
-          external_links_found:  currentData.external_links_found || '',
-          seo_check:             currentData.seo_check            || {},
-          eeat_score:            currentData.eeat_score           || {},
-          article_cost:          currentData.article_cost         || '',
-          inputTokens:           currentData.inputTokens          || 0,
-          outputTokens:          currentData.outputTokens         || 0
+          action:                 'approved',
+          keyword:                currentKeyword,
+          topic:                  currentTopic                      || currentData.topic || '',
+          article:                currentData.article               || '',
+          article_zh:             currentData.article_zh            || '',
+          unique_factor:          currentData.unique_factor         || '',
+          content_brief:          currentData.content_brief         || '',
+          content_gaps:           currentData.content_gaps          || '',
+          secondary_keywords:     currentData.secondary_keywords    || '',
+          search_volume:          currentData.search_volume         || 0,
+          keyword_difficulty:     currentData.keyword_difficulty    || 0,
+          operator_topic_notes:   currentData.operator_topic_notes  || '',
+          competitor_summary:     currentData.competitor_summary    || '',
+          internal_links:         currentData.internal_links        || [],
+          internal_link_1:        currentData.internal_link_1       || '',
+          internal_link_2:        currentData.internal_link_2       || '',
+          internal_links_used:    currentData.internal_links_used   || '',
+          external_links_found:   currentData.external_links_found  || '',
+          client_name:            currentClientName,
+          seo_check:              currentData.seo_check             || {},
+          eeat_score:             currentData.eeat_score            || {},
+          ai_detection_score:     currentData.ai_detection_score     ?? null,
+          ai_detection_verdict:   currentData.ai_detection_verdict   || '',
+          article_cost:           currentData.article_cost          || '',
+          real_questions:         currentData.real_questions        || [],
+          output_language:        outputLanguage,
+          faq_sources:            currentData.faq_sources           || [],
+          inputTokens:            currentData.inputTokens           || 0,
+          outputTokens:           currentData.outputTokens          || 0
         })
       });
-
       const raw = await res.text();
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch(e) {
-        console.error('JSON parse error on approval:', raw.substring(0, 500));
-        alert('Response parsing error. Check console.');
-        hideLoading();
-        document.getElementById('article-box').style.display = 'block';
-        return;
+      try { data = JSON.parse(raw); } catch(e) {
+        showAlertModal('Response parsing error.');
+        hideLoading(); document.getElementById('article-box').style.display = 'block'; return;
       }
-
       const item = Array.isArray(data) ? (data[0].json || data[0]) : data;
-
       hideLoading();
       document.getElementById('result-box').style.display = 'block';
-
       const docId  = item.docId  || '';
       const docUrl = docId
         ? 'https://docs.google.com/document/d/' + docId + '/edit'
         : (item.docUrl || '');
       const docTitle = item.docTitle || currentKeyword + ' Draft';
-
       document.getElementById('doc-link').innerHTML =
         '<a href="' + docUrl + '" target="_blank">Open Google Doc: ' + docTitle + '</a>';
-
     } catch(e) {
-      console.error(e);
-      alert('Something went wrong. Try again.');
-      hideLoading();
-      document.getElementById('article-box').style.display = 'block';
+      console.error(e); showAlertModal('Something went wrong. Try again.');
+      hideLoading(); document.getElementById('article-box').style.display = 'block';
     }
   }
 
   function startOver() {
-    document.getElementById('keyword').value              = '';
-    document.getElementById('operator_topic_notes').value = '';
-    document.getElementById('internal_link_1').value      = '';
-    document.getElementById('internal_link_2').value      = '';
+    resetForm();
     document.getElementById('article-box').style.display  = 'none';
     document.getElementById('review-box').style.display   = 'none';
     document.getElementById('result-box').style.display   = 'none';
     document.getElementById('loading-box').style.display  = 'none';
     document.getElementById('step1-box').style.display    = 'block';
-    currentKeyword = '';
-    currentNotes   = '';
-    currentCountry = 'us';
-    currentEnglish = 'American';
-    currentLink1   = '';
-    currentLink2   = '';
-    currentData    = {};
+    document.getElementById('target_audience').value = '';
   }
 </script>
 </body>
